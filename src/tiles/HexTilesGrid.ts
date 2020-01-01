@@ -1,9 +1,8 @@
 import { Vector3, Color3, Vector2 } from "@babylonjs/core/Maths/math";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
-import { WaterMaterial } from '@babylonjs/materials';
-import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
 import { float } from "@babylonjs/core/types";
+import { HexTileMesh } from "./HexTileMesh";
 
 export class HexTilesGrid {
     private width;
@@ -46,7 +45,7 @@ export class HexTilesGrid {
         var grid = new Mesh("Grid", scene);
         grid.isVisible = false;
 
-        var prefab = Mesh.CreateCylinder("cylinder", 1, 3, 3, 6, 1, scene, false);
+        var prefab:HexTileMesh = HexTileMesh.CreateHexTileMesh("HexTile", scene);
         prefab.scaling = new Vector3(3, 3, 3);
         prefab.rotation.y += Math.PI / 6;
 
@@ -77,7 +76,7 @@ export class HexTilesGrid {
         var greenMaterial = new StandardMaterial("Green", scene);
         greenMaterial.diffuseColor = new Color3(0.4, 1, 0.4);
 
-        var blueMaterial = new StandardMaterial("Green", scene);
+        var blueMaterial = new StandardMaterial("Blue", scene);
         blueMaterial.diffuseColor = new Color3(0.2, 0.5, 0.8);
 
         var materials = [
@@ -97,20 +96,26 @@ export class HexTilesGrid {
                 tile.hexPosition = new Vector3(x, 0, z);
 
                 random = Math.floor(Math.random() * 10);
+                console.log(random);
 
                 if (random % 2 === 0) {
-                    tile.scaling.y += 1;
+                    // Green
+                    tile.scaling.y += Math.floor(Math.random() * 4) + 1;
                     tile.material = materials[0];
                 }
                 else if (random % 3 === 0) {
-                    tile.scaling.y += 6;
+                    // Grey
+                    tile.scaling.y += Math.floor(Math.random() * 4) + 2;
                     tile.material = materials[2];
                 }
-                else if (random % 4 === 0) {
-                    tile.scaling.y += 9;
+                else if (random % 5 === 0) {
+                    // White
+                    tile.scaling.y += Math.floor(Math.random() * 6) + 4;
                     tile.material = materials[3];
                 }
                 else {
+                    // Blue
+                    tile.scaling.y -= 0.2;
                     tile.material = materials[1];
                 }
 

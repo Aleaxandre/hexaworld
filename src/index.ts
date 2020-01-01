@@ -9,13 +9,10 @@ import { GridMaterial } from "@babylonjs/materials/grid";
 
 // Required side effects to populate the Create methods on the mesh class. Without this, the bundle would be smaller but the createXXX methods from mesh would not be accessible.
 import "@babylonjs/core/Meshes/meshBuilder";
-import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
-import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 import { HexTilesGrid } from "./tiles/HexTilesGrid";
-import { CubeTexture } from "@babylonjs/core/Materials/Textures/cubeTexture";
-import { WaterMaterial } from "@babylonjs/materials";
+import { HexTileMesh } from "./tiles/HexTileMesh";
 
 // Get the canvas element from the DOM.
 const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
@@ -44,17 +41,20 @@ light.intensity = 0.7;
 // Create a grid material
 var material = new GridMaterial("grid", scene);
 
+var ballMaterial = new StandardMaterial("BallMat", scene);
+ballMaterial.diffuseColor = new Color3(0.8, 0.5, 0.3);
+
 // Our built-in 'sphere' shape. Params: name, subdivs, size, scene
 var sphere = Mesh.CreateSphere("sphere1", 16, 2, scene);
 
 // Move the sphere upward 1/2 its height
-sphere.position.y = 2;
+sphere.position.y = 5;
 
 // Affect a material
-sphere.material = material;
+sphere.material = ballMaterial;
 
 // Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene
-var ground = Mesh.CreateGround("ground1", 6, 6, 2, scene);
+var ground = Mesh.CreateGround("ground1", 16, 16, 16, scene);
 
 // Affect a material
 ground.material = material;
@@ -62,6 +62,18 @@ ground.material = material;
 
 const tilesGrid:HexTilesGrid = new HexTilesGrid();
 tilesGrid.generate(scene);
+
+var onClickHandler = function (event:MouseEvent) {
+    var pick = scene.pick(event.clientX, event.clientY);
+    console.log(pick.pickedMesh + "["+event.clientX+"-"+event.clientY+"]");
+
+	if (pick.pickedMesh && (<HexTileMesh>pick.pickedMesh).hexPosition) {
+		var hexagon = pick.pickedMesh;
+		console.log((<HexTileMesh>hexagon).hexPosition);
+	}
+};
+
+document.body.addEventListener("pointerdown", onClickHandler, false);
 
 // Render every frame
 engine.runRenderLoop(() => {
